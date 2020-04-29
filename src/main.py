@@ -1,4 +1,5 @@
 import csv
+from src.Visualizer import Visualizer
 
 coordinates = {}
 with open('../Dataset/airports.csv') as csvfile:
@@ -6,4 +7,5 @@ with open('../Dataset/airports.csv') as csvfile:
     for line in reader:
         coordinates[line["AIRPORT_ID"]] = [line["LATITUDE"], line["LONGITUDE"]]
 
-print(coordinates)
+# test = Visualizer(["2019-01.csv"])
+# print(test.data)
