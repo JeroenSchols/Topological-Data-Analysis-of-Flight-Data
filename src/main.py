@@ -2,8 +2,8 @@ from src.MapVisualizer import MapVisualizer
 import pandas as pd
 import numpy as np
 
-flights = pd.read_csv("Dataset/2019-01.csv", usecols=["FlightDate", "DepTime", "OriginAirportID", "DestAirportID"])
-airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT", "LATITUDE", "LONGITUDE"])
+flights = pd.read_csv("../Dataset/2019-01.csv", usecols=["FlightDate", "DepTime", "OriginAirportID", "DestAirportID"])
+airports = pd.read_csv("../Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT", "LATITUDE", "LONGITUDE"], index_col=["AIRPORT_ID"])
 
 mv = MapVisualizer()
 
