@@ -1,5 +1,4 @@
 from src.MapVisualizer import MapVisualizer
-from src.Filters import time_filter
 import pandas as pd
 import numpy as np
 import datetime
@@ -19,27 +18,12 @@ print(isinstance(pd.DataFrame,pd.Series))
 print(isinstance(pd.Series,pd.DataFrame))
 
 for i, flight in flights.iterrows():
-    # @TODO should have source and target airports of flights
-
-    #get check if airpot id is contained multiple times
-    #if so, get the first aiport that belongs to the given id
-    #else get the unique airport related to the id
-    if isinstance(airports.loc[flight["OriginAirportID"]], pd.DataFrame):
-        for j, airport in airports.loc[flight["OriginAirportID"]].iterrows():
-            source = airport
-            break
-    else:
-        source = airports.loc[flight["OriginAirportID"]]
-
-    if isinstance(airports.loc[flight["DestAirportID"]], pd.DataFrame):
-        for j, airport in airports.loc[flight["DestAirportID"]].iterrows():
-            target = airport
-            break
-    else:
-        target = airports.loc[flight["DestAirportID"]]
-
-    if i > 50:
-        break
+    source = airports.loc[flight["OriginAirportID"]]
+    target = airports.loc[flight["DestAirportID"]]
+    mv.add_vertex(source, 0)
+    mv.add_vertex(target, 1)
     mv.add_edge(source, target, np.random.choice(range(256)))
+    if i > 10000:
+        break
 
 mv.open_display()

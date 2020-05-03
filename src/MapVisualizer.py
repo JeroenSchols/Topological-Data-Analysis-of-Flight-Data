@@ -6,7 +6,7 @@ from shapely.geometry import Point, LineString
 
 class MapVisualizer(Visualizer):
     def __init__(self):
-        plt.rcParams['figure.dpi'] = 900
+        plt.switch_backend('TkAgg')
         self.points = {'geometry': [], 'color': []}
         self.edges = {'geometry': [], 'color': []}
 
@@ -28,15 +28,16 @@ class MapVisualizer(Visualizer):
         self.update_display()
 
     def update_display(self):
-        plt.clf()
         world_df = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
         point_df = gpd.GeoDataFrame(self.points['color'], geometry=self.points['geometry'])
         edge_df = gpd.GeoDataFrame(self.edges['color'], geometry=self.edges['geometry'])
-        ax = world_df.boundary.plot(linewidth=0.2, color='gray')
-        ax = world_df.plot(ax=ax, color='teal')
-        ax = point_df.plot(ax=ax, marker='o', column=0, markersize=0.05, cmap='brg')
-        edge_df.plot(ax=ax, column=0, linewidth=0.1, cmap='viridis')
+        ax = world_df.plot(color='gray')
+        ax = world_df.boundary.plot(ax=ax, linewidth=1, color='black')
+        ax = edge_df.plot(ax=ax, column=0, linewidth=1, cmap='viridis')
+        ax = point_df.plot(ax=ax, marker='o', column=0, markersize=5, cmap='brg')
         plt.axis('off')
+        plt.tight_layout()
+        plt.get_current_fig_manager().window.state('zoomed')
         plt.show()
 
     def close_display(self):
