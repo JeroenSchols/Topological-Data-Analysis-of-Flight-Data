@@ -1,21 +1,15 @@
 from src.MapVisualizer import MapVisualizer
+from src.Filters import time_filter
 import pandas as pd
 import numpy as np
 import datetime
 
-flights = pd.read_csv("../Dataset/2019-01.csv", usecols=["FlightDate", "DepTime", "OriginAirportID", "DestAirportID"])
-airports = pd.read_csv("../Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT", "LATITUDE", "LONGITUDE"], index_col=["AIRPORT_ID"])
+flights = pd.read_csv("Dataset/2019-01.csv", usecols=["FlightDate", "DepTime", "OriginAirportID", "DestAirportID"])
+airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT", "LATITUDE", "LONGITUDE"]).drop_duplicates("AIRPORT_ID").set_index("AIRPORT_ID", drop=False)
 
 mv = MapVisualizer()
 
 flights = time_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(2019, 1, 10))
-
-for i, airport in airports.iterrows():
-    # currently choses arbitrary colors
-    mv.add_vertex(airport, np.random.choice(range(256)))
-
-print(isinstance(pd.DataFrame,pd.Series))
-print(isinstance(pd.Series,pd.DataFrame))
 
 for i, flight in flights.iterrows():
     source = airports.loc[flight["OriginAirportID"]]
