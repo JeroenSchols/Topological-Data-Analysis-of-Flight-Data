@@ -13,7 +13,7 @@ for i, flight in flights.iterrows():
     mv.add_vertex(source, 0)
     mv.add_vertex(target, 1)
     mv.add_edge(source, target, np.random.choice(range(256)))
-    if i % 1000 == 0:
-        print(i, len(flights))
+    if i > 10000:
+        break
 
 mv.open_display()
