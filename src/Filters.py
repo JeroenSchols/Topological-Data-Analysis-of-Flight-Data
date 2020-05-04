@@ -16,3 +16,10 @@ def airport_filter(flights, ids):
     filtered_flights = flights.query('OriginAirportID in @ids | DestAirportID in @ids')
     print(filtered_flights.shape)
     return filtered_flights
+
+def frame_to_frequency(flight, key):
+    result = {}
+    temp = flight.groupby(key).count()
+    for key, value in temp.to_dict("index").items():
+        result[key] = max(value.values())
+    return result

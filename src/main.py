@@ -13,11 +13,20 @@ flights = time_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(
 ids = [14771, 12892]
 flights = airport_filter(flights, ids)
 
+
+flight_freq_origin = frame_to_frequency(flights, "OriginAirportID")
+flight_freq_dest = frame_to_frequency(flights, "DestAirportID")
+
+
 for i, flight in flights.iterrows():
     source = airports.loc[flight["OriginAirportID"]]
     target = airports.loc[flight["DestAirportID"]]
-    mv.add_vertex(source, 0)
-    mv.add_vertex(target, 1)
-    mv.add_edge(source, target, np.random.choice(range(256)))
+    freq_source = flight_freq_origin[flight["OriginAirportID"]]+flight_freq_origin[flight["OriginAirportID"]]
+    freq_target = flight_freq_dest[flight["DestAirportID"]]+flight_freq_dest[flight["DestAirportID"]]
+    mv.add_vertex(source, freq_source)
+    mv.add_vertex(target, freq_target)
+    mv.add_edge(source, target, max(freq_source,freq_target))
+    # if i > 10000:
+    #     break
 
-mv.open_display()
+mv.open_display(alpha = 0)
