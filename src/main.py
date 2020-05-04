@@ -1,5 +1,5 @@
 from src.MapVisualizer import MapVisualizer
-from src.Filters import time_filter
+from src.Filters import *
 import pandas as pd
 import numpy as np
 import datetime
@@ -9,17 +9,14 @@ airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT",
 
 mv = MapVisualizer()
 
-flights = time_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(2019, 1, 1))
+flights = time_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(2019, 1, 10))
+flights = airport_filter(flights, 14771)
 
-j = 0
 for i, flight in flights.iterrows():
     source = airports.loc[flight["OriginAirportID"]]
     target = airports.loc[flight["DestAirportID"]]
     mv.add_vertex(source, 0)
     mv.add_vertex(target, 1)
     mv.add_edge(source, target, np.random.choice(range(256)))
-    j += 1
-    if j > 5000:
-        break
 
-mv.open_display(0.1)
+mv.open_display()
