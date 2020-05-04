@@ -9,15 +9,17 @@ airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT",
 
 mv = MapVisualizer()
 
-flights = time_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(2019, 1, 10))
+flights = time_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(2019, 1, 1))
 
+j = 0
 for i, flight in flights.iterrows():
     source = airports.loc[flight["OriginAirportID"]]
     target = airports.loc[flight["DestAirportID"]]
     mv.add_vertex(source, 0)
     mv.add_vertex(target, 1)
     mv.add_edge(source, target, np.random.choice(range(256)))
-    if i > 10000:
+    j += 1
+    if j > 5000:
         break
 
-mv.open_display()
+mv.open_display(0.1)
