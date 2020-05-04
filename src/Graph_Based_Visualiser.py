@@ -79,15 +79,11 @@ class GraphBasedVisualiser:
         node_text = []
 
         for node in self.G.nodes():
-             print(self.G.nodes[node]['name'])
-             node_text.append(self.G.nodes[node]['name'])
+            node_text.append(self.G.nodes[node]['name'])
 
         for node, adjacencies in enumerate(self.G.adjacency()):
-            print(node)
             node_adjacencies.append(len(adjacencies[1]))
             node_text[node] = (node_text[node] + ' [ # of connections: ' + str(len(adjacencies[1])) + ' ]')
-
-        print(node_text)
 
         node_trace.marker.color = node_adjacencies
         node_trace.text = node_text
