@@ -5,13 +5,26 @@ class GraphBasedVisualiser:
     def __init__(self):
         self.G = nx.Graph()
 
-    def addNode(self, node, latitude, longitude):
-        self.G.add_node(node, pos=(longitude, latitude))
+    def add_vertex(self, node, color):
+        self.G.add_node(node["AIRPORT_ID"], pos=(node['LONGITUDE'], node['LATITUDE']), name=node["AIRPORT"])
+        print(node["AIRPORT_ID"])
 
-    def addEdge(self, node1, node2, weight):
-        self.G.add_edge(node1, node2, weight=weight)
+    def add_edge(self, node1, node2, weight):
+        self.G.add_edge(node1["AIRPORT_ID"], node2["AIRPORT_ID"], weight=weight)
 
-    def showGraph(self):
+    def open_display(self):
+        pos = nx.spring_layout(self.G, iterations=200, weight='weight')
+        for keys, values in pos.items():
+            self.G.nodes[keys]['pos'] = (values[0], values[1])
+
+        node_x = []
+        node_y = []
+        for node in self.G.nodes():
+            x, y = self.G.nodes[node]['pos']
+            node_x.append(x)
+            node_y.append(y)
+
+
         edge_x = []
         edge_y = []
         for edge in self.G.edges(data=True):
@@ -64,15 +77,20 @@ class GraphBasedVisualiser:
 
         node_adjacencies = []
         node_text = []
+
+        for node in self.G.nodes():
+             print(self.G.nodes[node]['name'])
+             node_text.append(self.G.nodes[node]['name'])
+
         for node, adjacencies in enumerate(self.G.adjacency()):
+            print(node)
             node_adjacencies.append(len(adjacencies[1]))
-            node_text.append('# of connections: ' + str(len(adjacencies[1])))
+            node_text[node] = (node_text[node] + ' [ # of connections: ' + str(len(adjacencies[1])) + ' ]')
+
+        print(node_text)
 
         node_trace.marker.color = node_adjacencies
         node_trace.text = node_text
-
-        print(node_adjacencies)
-
 
         fig = go.Figure(data=[edge_trace, node_trace],
                         layout=go.Layout(
