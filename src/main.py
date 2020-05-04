@@ -23,27 +23,16 @@ ids = [14771, 12892]
 flights = airport_filter(flights, ids)
 
 
-flight_freq_origin = frame_to_frequency(flights, "OriginAirportID")
-flight_freq_dest = frame_to_frequency(flights, "DestAirportID")
-flight_freq_sum = sum_frequencies(flight_freq_origin, flight_freq_dest)
+flights = frame_to_frequency(flights, ["OriginAirportID", "DestAirportID"])
+flights = frequency_filter(flights, 3)
 
+for (s, t) in flights:
+    source = airports.loc[s]
+    target = airports.loc[t]
 
-flights = frequency_filter(flights, flight_freq_sum, 50)
-
-
-for i, flight in flights.iterrows():
-    source = airports.loc[flight["OriginAirportID"]]
-    target = airports.loc[flight["DestAirportID"]]
-    freq_source = flight_freq_sum[flight["OriginAirportID"]]
-    freq_target = flight_freq_sum[flight["DestAirportID"]]
-
-    mv.add_vertex(source, freq_source)
-    mv.add_vertex(target, freq_target)
-    mv.add_edge(source, target, max(freq_source,freq_target))
-
-    gv.add_vertex(source, freq_source)
-    gv.add_vertex(target, freq_target)
-    gv.add_edge(source, target, max(freq_source, freq_target))
+    gv.add_vertex(source, flights[(s, t)])
+    gv.add_vertex(target, flights[(s, t)])
+    gv.add_edge(source, target, flights[(s, t)])
     # if i > 10000:
     #     break
 

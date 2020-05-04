@@ -72,12 +72,9 @@ def sum_frequencies(freq1, freq2):
 
 
 # Filter all flights with airports visited less than provided frequency
-def frequency_filter(flights, frequencies, frequency):
-    print(flights.shape)
-    filter = []
-    for key, value in frequencies.items():
-        if value >= frequency: filter.append(key)
-    filtered_flights = flights.query(
-        'OriginAirportID in @filter | DestAirportID in @filter')
-    print(filtered_flights.shape)
-    return filtered_flights
+def frequency_filter(flights_frequencies, min_frequency):
+    filter_list = {}
+    for key, value in flights_frequencies.items():
+        if value >= min_frequency:
+            filter_list[key] = value
+    return filter_list
