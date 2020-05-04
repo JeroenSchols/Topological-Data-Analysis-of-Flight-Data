@@ -25,9 +25,10 @@ class MapVisualizer(Visualizer):
         self.edges = {'geometry': [], 'color': []}
 
     def open_display(self, alpha=1.0):
-        self.update_display()
+        self.update_display(alpha)
 
     def update_display(self, alpha=1.0):
+        print(alpha)
         print('plot')
         world_df = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
         point_df = gpd.GeoDataFrame(self.points['color'], geometry=self.points['geometry'])
