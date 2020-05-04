@@ -1,4 +1,4 @@
-#from src.MapVisualizer import MapVisualizer
+from src.MapVisualizer import MapVisualizer
 from src.Graph_Based_Visualiser import GraphBasedVisualiser
 from src.Filters import *
 import pandas as pd
@@ -10,7 +10,7 @@ flights = pd.read_csv("Dataset/2019-01.csv", usecols=[
 airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT", "LATITUDE",
                                                            "LONGITUDE"]).drop_duplicates("AIRPORT_ID").set_index("AIRPORT_ID", drop=False)
 
-#mv = MapVisualizer()
+mv = MapVisualizer()
 gv = GraphBasedVisualiser()
 
 flights = day_filter(flights, datetime.datetime(
@@ -37,9 +37,9 @@ for i, flight in flights.iterrows():
     freq_source = flight_freq_sum[flight["OriginAirportID"]]
     freq_target = flight_freq_sum[flight["DestAirportID"]]
 
-    #mv.add_vertex(source, freq_source)
-    #mv.add_vertex(target, freq_target)
-    #mv.add_edge(source, target, max(freq_source,freq_target))
+    mv.add_vertex(source, freq_source)
+    mv.add_vertex(target, freq_target)
+    mv.add_edge(source, target, max(freq_source,freq_target))
 
     gv.add_vertex(source, freq_source)
     gv.add_vertex(target, freq_target)
@@ -48,4 +48,4 @@ for i, flight in flights.iterrows():
     #     break
 
 gv.open_display()
-#mv.open_display()
+mv.open_display()
