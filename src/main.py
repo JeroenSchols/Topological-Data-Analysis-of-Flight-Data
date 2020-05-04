@@ -4,9 +4,9 @@ import pandas as pd
 import numpy as np
 import datetime
 
-flights = pd.read_csv("../Dataset/2019-01.csv", usecols=[
+flights = pd.read_csv("Dataset/2019-01.csv", usecols=[
                       "FlightDate", "DepTime", "ArrTime", "OriginAirportID", "DestAirportID"])
-airports = pd.read_csv("../Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT", "LATITUDE",
+airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT", "LATITUDE",
                                                            "LONGITUDE"]).drop_duplicates("AIRPORT_ID").set_index("AIRPORT_ID", drop=False)
 
 mv = MapVisualizer()
@@ -23,13 +23,17 @@ flights = airport_filter(flights, ids)
 
 flight_freq_origin = frame_to_frequency(flights, "OriginAirportID")
 flight_freq_dest = frame_to_frequency(flights, "DestAirportID")
+flight_freq_sum = sum_frequencies(flight_freq_origin, flight_freq_dest)
+
+
+flights = frequency_filter(flights, flight_freq_sum, 50)
 
 
 for i, flight in flights.iterrows():
     source = airports.loc[flight["OriginAirportID"]]
     target = airports.loc[flight["DestAirportID"]]
-    freq_source = flight_freq_origin[flight["OriginAirportID"]]+flight_freq_origin[flight["OriginAirportID"]]
-    freq_target = flight_freq_dest[flight["DestAirportID"]]+flight_freq_dest[flight["DestAirportID"]]
+    freq_source = flight_freq_sum[flight["OriginAirportID"]]
+    freq_target = flight_freq_sum[flight["DestAirportID"]]
     mv.add_vertex(source, freq_source)
     mv.add_vertex(target, freq_target)
     mv.add_edge(source, target, max(freq_source,freq_target))

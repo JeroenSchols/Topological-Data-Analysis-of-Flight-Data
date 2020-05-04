@@ -44,9 +44,40 @@ def airport_filter(flights, ids):
     print(filtered_flights.shape)
     return filtered_flights
 
+
+# Calculate dictionary of frequency of an airportID occuring
 def frame_to_frequency(flight, key):
     result = {}
     temp = flight.groupby(key).count()
     for key, value in temp.to_dict("index").items():
         result[key] = max(value.values())
     return result
+
+
+# calculate summation of frequencies
+def sum_frequencies(freq1, freq2):
+    res = {}
+    for key, value in freq1.items():
+        if key in res:
+            res[key] += value
+        else:
+            res[key] = value
+
+    for key, value in freq2.items():
+        if key in res:
+            res[key] += value
+        else:
+            res[key] = value
+    return res
+
+
+# Filter all flights with airports visited less than provided frequency
+def frequency_filter(flights, frequencies, frequency):
+    print(flights.shape)
+    filter = []
+    for key, value in frequencies.items():
+        if value >= frequency: filter.append(key)
+    filtered_flights = flights.query(
+        'OriginAirportID in @filter | DestAirportID in @filter')
+    print(filtered_flights.shape)
+    return filtered_flights
