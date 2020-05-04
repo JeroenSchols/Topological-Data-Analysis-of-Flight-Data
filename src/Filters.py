@@ -11,8 +11,8 @@ def time_filter(flights, start, end):
 
 
 # Filter flights based on airport
-def airport_filter(flights, id):
+def airport_filter(flights, ids):
     print(flights.shape)
-    filtered_flights = flights.query('OriginAirportID == @id | DestAirportID == @id')
+    filtered_flights = flights.query('OriginAirportID in @ids | DestAirportID in @ids')
     print(filtered_flights.shape)
     return filtered_flights

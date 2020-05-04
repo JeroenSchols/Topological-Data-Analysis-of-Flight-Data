@@ -10,7 +10,8 @@ airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT",
 mv = MapVisualizer()
 
 flights = time_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(2019, 1, 10))
-flights = airport_filter(flights, 14771)
+ids = [14771, 12892]
+flights = airport_filter(flights, ids)
 
 for i, flight in flights.iterrows():
     source = airports.loc[flight["OriginAirportID"]]
