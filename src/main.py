@@ -33,8 +33,11 @@ IDtoIndex.sort()
 IDtoIndex = {val: key for key, val in enumerate(IDtoIndex)}
 
 dist_mat = distance_matrix(flights, IDtoIndex)
-dgms = ripser(dist_mat)["dgms"]
-plot_diagrams(dgms, show= True)
+dist_mat = (dist_mat.max() - dist_mat)
+dgms = ripser(dist_mat)['dgms']
+dgmsDM = ripser(dist_mat, distance_matrix=True)['dgms']
+plot_diagrams(dgms, show=True)
+plot_diagrams(dgmsDM, show=True)
 
 # for (s, t) in flights:
 #     source = airports.loc[s]

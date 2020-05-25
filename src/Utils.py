@@ -16,7 +16,6 @@ def distance_matrix(flights, IDtoIndex):
     # generate matrix
     temp = flights.to_dict("index")
     for key, value in temp.items():
-        print(value)
         res[IDtoIndex[value["OriginAirportID"]]][IDtoIndex[value["DestAirportID"]]] = value["count"]
         res[IDtoIndex[value["DestAirportID"]]][IDtoIndex[value["OriginAirportID"]]] = value["count"]
     # Return results
