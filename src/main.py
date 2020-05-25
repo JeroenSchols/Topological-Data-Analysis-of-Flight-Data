@@ -8,7 +8,10 @@ import pandas as pd
 import numpy as np
 import datetime
 
-flights = pd.read_csv("Dataset/2019-01.csv", usecols=["FlightDate", "DepTime", "ArrTime", "OriginAirportID", "DestAirportID"])
+input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(1) for y in [2019]]
+frames = [pd.read_csv(file, usecols=["FlightDate", "DepTime", "ArrTime", "OriginAirportID", "DestAirportID"]) for file in input_files]
+flights = pd.concat(frames, ignore_index=True)
+
 airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT", "LATITUDE", "LONGITUDE"])\
     .drop_duplicates("AIRPORT_ID").set_index("AIRPORT_ID", drop=False)
 
