@@ -2,6 +2,8 @@ from src.MapVisualizer import MapVisualizer
 from src.Graph_Based_Visualiser import GraphBasedVisualiser
 from src.Filters import *
 from src.Utils import *
+from ripser import ripser
+from persim import plot_diagrams
 import pandas as pd
 import numpy as np
 import datetime
@@ -31,6 +33,8 @@ IDtoIndex.sort()
 IDtoIndex = {val: key for key, val in enumerate(IDtoIndex)}
 
 dist_mat = distance_matrix(flights, IDtoIndex)
+dgms = ripser(dist_mat)["dgms"]
+plot_diagrams(dgms, show= True)
 
 # for (s, t) in flights:
 #     source = airports.loc[s]
