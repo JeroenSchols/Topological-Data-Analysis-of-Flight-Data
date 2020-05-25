@@ -25,7 +25,12 @@ flights = day_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(2
 
 flights = merge_flights(flights)
 
-print(flights)
+# dist = distance_matrix(flights)
+IDtoIndex = list(set(flights["OriginAirportID"].tolist()).union(flights["DestAirportID"].tolist()))
+IDtoIndex.sort()
+IDtoIndex = {val: key for key, val in enumerate(IDtoIndex)}
+
+dist_mat = distance_matrix(flights, IDtoIndex)
 
 # for (s, t) in flights:
 #     source = airports.loc[s]
