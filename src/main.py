@@ -4,11 +4,13 @@ from src.Filters import *
 from src.Utils import *
 from ripser import ripser
 from persim import plot_diagrams
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import datetime
 
-input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(1) for y in [2019]]
+
+input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(0,1) for y in [2019]]
 frames = [pd.read_csv(file, usecols=["FlightDate", "DepTime", "ArrTime", "OriginAirportID", "DestAirportID"]) for file in input_files]
 flights = pd.concat(frames, ignore_index=True)
 
@@ -18,7 +20,7 @@ airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT",
 # mv = MapVisualizer()
 # gv = GraphBasedVisualiser()
 
-flights = day_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(2019, 1, 10))
+flights = day_filter(flights, datetime.datetime(2019, 1, 24), datetime.datetime(2019, 1, 27))
 
 # startTime = datetime.datetime(1900, 1, 1)
 # flights = time_filter(flights, startTime.replace(hour=10, minute=00), startTime.replace(hour=12, minute=00))
@@ -34,13 +36,39 @@ flights = merge_flights(flights)
 IDtoIndex = list(set(flights["OriginAirportID"].tolist()).union(flights["DestAirportID"].tolist()))
 IDtoIndex.sort()
 IDtoIndex = {val: key for key, val in enumerate(IDtoIndex)}
+print(flights)
 
 dist_mat = distance_matrix(flights, IDtoIndex)
+print(dist_mat)
 dist_mat = (dist_mat.max() - dist_mat)
-dgms = ripser(dist_mat)['dgms']
-dgmsDM = ripser(dist_mat, distance_matrix=True)['dgms']
+dist_mat = dist_mat - (np.identity(len(dist_mat))*np.max(dist_mat))
+print(dist_mat)
+dgms = ripser(dist_mat, distance_matrix=True)['dgms']
 plot_diagrams(dgms, show=True)
-plot_diagrams(dgmsDM, show=True)
+a = len(dgms[0])
+print(a)
+# print(dgms)
+
+plt.rcdefaults()
+fig, gnt = plt.subplots()
+
+# gnt.set_xlabel("lifetime")
+# gnt.set_yticks(range(a*2))
+# gnt.set_ylabel("H0")
+for idx, bar in enumerate(dgms[0]):
+    # print(f"idx {idx}  bar {bar}")
+    gnt.broken_barh([(bar[0], bar[1]-bar[0])], (idx, 0.5))
+# fig.set_figheight(300)
+# fig.set_figwidth(20)
+plt.savefig("H0.pdf")
+
+plt.rcdefaults()
+fig, gnt = plt.subplots()
+
+for idx, bar in enumerate(dgms[1]):
+    # print(f"idx {idx}  bar {bar}")
+    gnt.broken_barh([(bar[0], bar[1]-bar[0])], (idx, 0.5), facecolors = ("tab:orange"))
+plt.savefig("H1.pdf")
 
 # for (s, t) in flights:
 #     source = airports.loc[s]
