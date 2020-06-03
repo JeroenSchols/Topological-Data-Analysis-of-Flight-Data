@@ -10,7 +10,7 @@ def day_filter(flight, start, end):
     return filtered_flight
 
 
-def time_filter(flight, start, end):
+def time_filter(flight, start, end, inverse):
     print(flight.shape)
     # Do lots of stuff to get time format to be usable for DepTime
     flight['DepTime'] = flight['DepTime'].astype(
@@ -30,8 +30,12 @@ def time_filter(flight, start, end):
     flight['ArrTime'] = flight['ArrTime'].map(lambda a: a[:2] + ":" + a[2:])
     flight['ArrTime'] = pd.to_datetime(flight['ArrTime'], format='%H:%M')
 
-    filtered_flight = flight.query(
-        '(@start <= ArrTime & ArrTime <= @end) | (@start <= DepTime & DepTime <= @end)')
+    if inverse:
+        filtered_flight = flight.query(
+            '(ArrTime < @start | ArrTime > @end) | (DepTime < @start | DepTime > @end)')
+    else:
+        filtered_flight = flight.query(
+            '(@start <= ArrTime & ArrTime <= @end) | (@start <= DepTime & DepTime <= @end)')
     print(filtered_flight.shape)
     return filtered_flight
 

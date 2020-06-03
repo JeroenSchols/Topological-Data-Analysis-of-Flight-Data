@@ -10,7 +10,7 @@ import numpy as np
 import datetime
 
 
-input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(0,1) for y in [2019]]
+input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(11, 12) for y in [2019]]
 frames = [pd.read_csv(file, usecols=["FlightDate", "DepTime", "ArrTime", "OriginAirportID", "DestAirportID"]) for file in input_files]
 flights = pd.concat(frames, ignore_index=True)
 
@@ -20,10 +20,10 @@ airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT",
 # mv = MapVisualizer()
 # gv = GraphBasedVisualiser()
 
-flights = day_filter(flights, datetime.datetime(2019, 1, 24), datetime.datetime(2019, 1, 27))
+flights = day_filter(flights, datetime.datetime(2019, 12, 25), datetime.datetime(2019, 12, 26))
 
 # startTime = datetime.datetime(1900, 1, 1)
-# flights = time_filter(flights, startTime.replace(hour=10, minute=00), startTime.replace(hour=12, minute=00))
+# flights = time_filter(flights, startTime.replace(hour=6, minute=00), startTime.replace(hour=18, minute=00), True)
 # ids = [14771, 12892]
 # flights = airport_filter(flights, ids)
 
