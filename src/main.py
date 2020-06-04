@@ -20,10 +20,10 @@ airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT",
 # mv = MapVisualizer()
 # gv = GraphBasedVisualiser()
 
-flights = day_filter(flights, datetime.datetime(2019, 12, 25), datetime.datetime(2019, 12, 26))
+flights = day_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(2019, 1, 31))
 
-# startTime = datetime.datetime(1900, 1, 1)
-# flights = time_filter(flights, startTime.replace(hour=6, minute=00), startTime.replace(hour=18, minute=00), True)
+startTime = datetime.datetime(1900, 1, 1)
+flights = time_filter(flights, startTime.replace(hour=6, minute=00), startTime.replace(hour=18, minute=00), True)
 # ids = [14771, 12892]
 # flights = airport_filter(flights, ids)
 

@@ -32,10 +32,10 @@ def time_filter(flight, start, end, inverse):
 
     if inverse:
         filtered_flight = flight.query(
-            '(ArrTime < @start | ArrTime > @end) | (DepTime < @start | DepTime > @end)')
+            '(DepTime < @start | DepTime > @end)')
     else:
         filtered_flight = flight.query(
-            '(@start <= ArrTime & ArrTime <= @end) | (@start <= DepTime & DepTime <= @end)')
+            '(@start <= DepTime & DepTime <= @end)')
     print(filtered_flight.shape)
     return filtered_flight
 
