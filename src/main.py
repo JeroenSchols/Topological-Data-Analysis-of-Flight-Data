@@ -47,13 +47,15 @@ for name, dist_matrix in distance_matrices:
 
 print("computing bottleneck distance")
 bottleneck_distances = []
-for name1, dist_matrix1 in distance_matrices:
+for i, (name1, dist_matrix1) in enumerate(distance_matrices):
     distances = []
-    for name2, dist_matrix2 in distance_matrices:
-        distance = persim.bottleneck(dist_matrix1, dist_matrix2)
-        distances.append(distance)
+    for j, (name2, dist_matrix2) in enumerate(distance_matrices):
+        if i > j:
+            distances.append(bottleneck_distances[j][i])
+        else:
+            distance = persim.bottleneck(dist_matrix1, dist_matrix2)
+            distances.append(distance)
     bottleneck_distances.append(distances)
-
 
 # # gnt.set_xlabel("lifetime")
 # # gnt.set_yticks(range(a*2))
