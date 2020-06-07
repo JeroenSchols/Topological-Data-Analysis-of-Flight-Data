@@ -21,41 +21,48 @@ IDtoIndex.sort()
 IDtoIndex = {val: key for key, val in enumerate(IDtoIndex)}
 
 group_data = []
+idx_to_name = []
 # filter dataset
 for day in range(1, 32):
-    name = "day = " + str(day)
+    idx_to_name.append("day = " + str(day))
     subset_flights = day_filter(flights, datetime.datetime(2019, 1, day), datetime.datetime(2019, 1, day))
-    group_data.append((name, subset_flights))
+    group_data.append(subset_flights)
 
 # transform data from single flights to (origin, destination, count)
-group_data = [(name, merge_flights(subset_flights)) for name, subset_flights in group_data]
+group_data = [merge_flights(subset_flights) for subset_flights in group_data]
 
 # compute distance matrices
 distance_matrices = []
-for name, subset_flights in group_data:
+for subset_flights in group_data:
     dist_matrix = distance_matrix(subset_flights, IDtoIndex)
     dist_matrix = dist_matrix.max() - dist_matrix
     dist_matrix = dist_matrix - (np.identity(len(dist_matrix))*np.max(dist_matrix))
-    distance_matrices.append((name, dist_matrix))
+    distance_matrices.append(dist_matrix)
 
 # compute persistence diagrams
 print("computing persistence diagrams")
 persist_diagrams = []
-for name, dist_matrix in distance_matrices:
+for dist_matrix in distance_matrices:
     dgms = ripser(dist_matrix, distance_matrix=True)['dgms']
-    persist_diagrams.append((name, dgms))
+    persist_diagrams.append(dgms)
 
 print("computing bottleneck distance")
 bottleneck_distances = []
-for i, (name1, dist_matrix1) in enumerate(distance_matrices):
+for i, dist_matrix1 in enumerate(distance_matrices):
     distances = []
-    for j, (name2, dist_matrix2) in enumerate(distance_matrices):
+    for j, dist_matrix2 in enumerate(distance_matrices):
         if i > j:
             distances.append(bottleneck_distances[j][i])
         else:
             distance = persim.bottleneck(dist_matrix1, dist_matrix2)
             distances.append(distance)
     bottleneck_distances.append(distances)
+
+print("clustering")
+clustering = AffinityPropagation(affinity='precomputed').fit(bottleneck_distances)
+clustering = [(idx_to_name[idx], cluster) for idx, cluster in enumerate(clustering.labels_)]
+for name, cluster in clustering:
+    print(name, ",", cluster)
 
 # # gnt.set_xlabel("lifetime")
 # # gnt.set_yticks(range(a*2))
