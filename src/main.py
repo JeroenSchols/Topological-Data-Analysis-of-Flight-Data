@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import datetime
 import persim
+from sklearn.cluster import AffinityPropagation
 
 # load and parse input files
 input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(0, 1) for y in [2019]]
