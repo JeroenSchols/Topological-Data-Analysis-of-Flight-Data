@@ -8,77 +8,67 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import datetime
+import persim
 
-
-input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(11, 12) for y in [2019]]
+# load and parse input files
+input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(0, 1) for y in [2019]]
 frames = [pd.read_csv(file, usecols=["FlightDate", "DepTime", "ArrTime", "OriginAirportID", "DestAirportID"]) for file in input_files]
 flights = pd.concat(frames, ignore_index=True)
-
 airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT", "LATITUDE", "LONGITUDE"])\
     .drop_duplicates("AIRPORT_ID").set_index("AIRPORT_ID", drop=False)
-
-# mv = MapVisualizer()
-# gv = GraphBasedVisualiser()
-
-flights = day_filter(flights, datetime.datetime(2019, 1, 1), datetime.datetime(2019, 1, 31))
-
-startTime = datetime.datetime(1900, 1, 1)
-flights = time_filter(flights, startTime.replace(hour=6, minute=00), startTime.replace(hour=18, minute=00), True)
-# ids = [14771, 12892]
-# flights = airport_filter(flights, ids)
-
-# flights = frame_to_frequency(flights, ["OriginAirportID", "DestAirportID"])
-# flights = frequency_filter(flights, 3)
-
-flights = merge_flights(flights)
-
-# dist = distance_matrix(flights)
 IDtoIndex = list(set(flights["OriginAirportID"].tolist()).union(flights["DestAirportID"].tolist()))
 IDtoIndex.sort()
 IDtoIndex = {val: key for key, val in enumerate(IDtoIndex)}
-print(flights)
 
-dist_mat = distance_matrix(flights, IDtoIndex)
-print(dist_mat)
-dist_mat = (dist_mat.max() - dist_mat)
-dist_mat = dist_mat - (np.identity(len(dist_mat))*np.max(dist_mat))
-print(dist_mat)
-dgms = ripser(dist_mat, distance_matrix=True)['dgms']
-plot_diagrams(dgms, show=True)
-a = len(dgms[0])
-print(a)
-# print(dgms)
+group_data = []
+# filter dataset
+for day in range(1, 32):
+    name = "day = " + str(day)
+    subset_flights = day_filter(flights, datetime.datetime(2019, 1, day), datetime.datetime(2019, 1, day))
+    group_data.append((name, subset_flights))
 
-plt.rcdefaults()
-fig, gnt = plt.subplots()
+# transform data from single flights to (origin, destination, count)
+group_data = [(name, merge_flights(subset_flights)) for name, subset_flights in group_data]
 
-# gnt.set_xlabel("lifetime")
-# gnt.set_yticks(range(a*2))
-# gnt.set_ylabel("H0")
-for idx, bar in enumerate(dgms[0]):
-    # print(f"idx {idx}  bar {bar}")
-    gnt.broken_barh([(bar[0], bar[1]-bar[0])], (idx, 0.5))
-# fig.set_figheight(300)
-# fig.set_figwidth(20)
-plt.savefig("H0.pdf")
+# compute distance matrices
+distance_matrices = []
+for name, subset_flights in group_data:
+    dist_matrix = distance_matrix(subset_flights, IDtoIndex)
+    dist_matrix = dist_matrix.max() - dist_matrix
+    dist_matrix = dist_matrix - (np.identity(len(dist_matrix))*np.max(dist_matrix))
+    distance_matrices.append((name, dist_matrix))
 
-plt.rcdefaults()
-fig, gnt = plt.subplots()
+# compute persistence diagrams
+print("computing persistence diagrams")
+persist_diagrams = []
+for name, dist_matrix in distance_matrices:
+    dgms = ripser(dist_matrix, distance_matrix=True)['dgms']
+    persist_diagrams.append((name, dgms))
 
-for idx, bar in enumerate(dgms[1]):
-    # print(f"idx {idx}  bar {bar}")
-    gnt.broken_barh([(bar[0], bar[1]-bar[0])], (idx, 0.5), facecolors = ("tab:orange"))
-plt.savefig("H1.pdf")
+print("computing bottleneck distance")
+bottleneck_distances = []
+for name1, dist_matrix1 in distance_matrices:
+    distances = []
+    for name2, dist_matrix2 in distance_matrices:
+        distance = persim.bottleneck(dist_matrix1, dist_matrix2)
+        distances.append(distance)
+    bottleneck_distances.append(distances)
 
-# for (s, t) in flights:
-#     source = airports.loc[s]
-#     target = airports.loc[t]
+
+# # gnt.set_xlabel("lifetime")
+# # gnt.set_yticks(range(a*2))
+# # gnt.set_ylabel("H0")
+# for idx, bar in enumerate(dgms[0]):
+#     # print(f"idx {idx}  bar {bar}")
+#     gnt.broken_barh([(bar[0], bar[1]-bar[0])], (idx, 0.5))
+# # fig.set_figheight(300)
+# # fig.set_figwidth(20)
+# plt.savefig("H0.pdf")
 #
-#     gv.add_vertex(source, flights[(s, t)])
-#     gv.add_vertex(target, flights[(s, t)])
-#     gv.add_edge(source, target, flights[(s, t)])
-#     # if i > 10000:
-#     #     break
+# plt.rcdefaults()
+# fig, gnt = plt.subplots()
 #
-# gv.open_display()
-# mv.open_display()
+# for idx, bar in enumerate(dgms[1]):
+#     # print(f"idx {idx}  bar {bar}")
+#     gnt.broken_barh([(bar[0], bar[1]-bar[0])], (idx, 0.5), facecolors = ("tab:orange"))
+# plt.savefig("H1.pdf")
