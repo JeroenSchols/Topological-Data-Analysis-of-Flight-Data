@@ -12,7 +12,7 @@ import persim
 from sklearn.cluster import AffinityPropagation
 
 # load and parse input files
-input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(0, 1) for y in [2019]]
+input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(1, 2) for y in [2019]]
 frames = [pd.read_csv(file, usecols=["FlightDate", "DepTime", "ArrTime", "OriginAirportID", "DestAirportID"]) for file in input_files]
 flights = pd.concat(frames, ignore_index=True)
 airports = pd.read_csv("Dataset/airports.csv", usecols=["AIRPORT_ID", "AIRPORT", "LATITUDE", "LONGITUDE"])\
@@ -23,11 +23,20 @@ IDtoIndex = {val: key for key, val in enumerate(IDtoIndex)}
 
 group_data = []
 idx_to_name = []
+
+# Needed to set time for time_filter
+startTime = datetime.datetime(1900, 1, 1)
+
 # filter dataset
-for day in range(1, 32):
+for day in range(1, 29):
     idx_to_name.append("day = " + str(day))
-    subset_flights = day_filter(flights, datetime.datetime(2019, 1, day), datetime.datetime(2019, 1, day))
-    group_data.append(subset_flights)
+    subset_flights = day_filter(flights, datetime.datetime(2019, 2, day), datetime.datetime(2019, 2, day))
+    day_flights = time_filter(subset_flights, startTime.replace(hour=6, minute=00), startTime.replace(hour=18, minute=00), False)
+    group_data.append(day_flights)
+
+    idx_to_name.append("night = " + str(day))
+    night_flights = time_filter(subset_flights, startTime.replace(hour=6, minute=00), startTime.replace(hour=18, minute=00), True)
+    group_data.append(night_flights)
 
 # transform data from single flights to (origin, destination, count)
 group_data = [merge_flights(subset_flights) for subset_flights in group_data]
