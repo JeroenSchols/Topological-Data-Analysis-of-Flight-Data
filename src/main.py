@@ -11,8 +11,8 @@ import datetime
 import persim
 from sklearn.cluster import AffinityPropagation
 
-use_zero_persistence = False
-use_first_persistence = False
+use_zero_persistence = True
+use_first_persistence = True
 
 # load and parse input files
 input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(0, 1) for y in [2019]]
