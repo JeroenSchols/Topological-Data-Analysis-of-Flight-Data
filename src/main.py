@@ -11,6 +11,9 @@ import datetime
 import persim
 from sklearn.cluster import AffinityPropagation
 
+use_zero_persistence = False
+use_first_persistence = False
+
 # load and parse input files
 input_files = ["Dataset/" + str(y) + "-" + str(m+1).zfill(2) + ".csv" for m in range(0, 1) for y in [2019]]
 frames = [pd.read_csv(file, usecols=["FlightDate", "DepTime", "ArrTime", "OriginAirportID", "DestAirportID"]) for file in input_files]
@@ -44,7 +47,16 @@ for subset_flights in group_data:
 print("computing persistence diagrams")
 persist_diagrams = []
 for dist_matrix in distance_matrices:
-    dgms = ripser(dist_matrix, distance_matrix=True)['dgms']
+    dgms = None
+    if use_zero_persistence & use_first_persistence:
+        dgms = ripser(dist_matrix, distance_matrix=True)['dgms']
+    elif use_zero_persistence:
+        dgms = ripser(dist_matrix, distance_matrix=True)['dgms'][0]
+    elif use_first_persistence:
+        dgms = ripser(dist_matrix, distance_matrix=True)['dgms'][1]
+    else:
+        print("should use at least zero or first persistence metric")
+        assert False
     persist_diagrams.append(dgms)
 
 print("computing bottleneck distance")
