@@ -81,6 +81,19 @@ for i, dist_matrix1 in enumerate(persist_diagrams):
             distances.append(distance)
     bottleneck_distances.append(distances)
 
+print("inverting")
+# Find max value
+max_value = 0
+for bottleneck_distance in bottleneck_distances:
+    cur_max_value = max(bottleneck_distance)
+    if cur_max_value > max_value:
+        max_value = cur_max_value
+
+# Invert values
+for bottleneck_distance in bottleneck_distances:
+    for i in range(0, len(bottleneck_distance)):
+        bottleneck_distance[i] = max_value - bottleneck_distance[i]
+
 print("clustering")
 clustering = AffinityPropagation(affinity='precomputed').fit(bottleneck_distances)
 clustering = [(idx_to_name[idx], cluster) for idx, cluster in enumerate(clustering.labels_)]
