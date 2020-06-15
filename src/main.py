@@ -69,7 +69,8 @@ for month in range(1, 13):
     for dist_matrix in distance_matrices:
         dgms = None
         if use_zero_persistence & use_first_persistence:
-            dgms = ripser(dist_matrix, distance_matrix=True)['dgms']
+            print("should use either zero or first persistence metric, but not both")
+            assert False
         elif use_zero_persistence:
             dgms = ripser(dist_matrix, distance_matrix=True)['dgms'][0]
         elif use_first_persistence:
@@ -81,16 +82,39 @@ for month in range(1, 13):
 
     print("computing bottleneck distance")
     bottleneck_distances = []
-    for i, dist_matrix1 in enumerate(distance_matrices):
+    for i, dist_matrix1 in enumerate(persist_diagrams):
         print(i)
         distances = []
-        for j, dist_matrix2 in enumerate(distance_matrices):
+        for j, dist_matrix2 in enumerate(persist_diagrams):
             if i > j:
                 distances.append(bottleneck_distances[j][i])
             else:
                 distance = persim.bottleneck(dist_matrix1, dist_matrix2)
                 distances.append(distance)
         bottleneck_distances.append(distances)
+
+    print("inverting")
+    # Find max value
+    max_value = 0
+    for bottleneck_distance in bottleneck_distances:
+        cur_max_value = max(bottleneck_distance)
+        if cur_max_value > max_value:
+            max_value = cur_max_value
+
+    # Invert values
+    for bottleneck_distance in bottleneck_distances:
+        for i in range(0, len(bottleneck_distance)):
+            bottleneck_distance[i] = max_value - bottleneck_distance[i]
+
+    # change diagonal to median value
+    print("modifying diagonal")
+    all_vals = [val for r, row in enumerate(bottleneck_distances) for c, val in enumerate(row) if c != r]
+    for row in bottleneck_distances:
+        print(row)
+    all_vals.sort()
+    median = all_vals[int(len(all_vals) / 2)]
+    for i in range(len(bottleneck_distances)):
+        bottleneck_distances[i][i] = median
 
     print("clustering")
     clustering = AffinityPropagation(affinity='precomputed').fit(bottleneck_distances)
