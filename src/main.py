@@ -94,6 +94,16 @@ for bottleneck_distance in bottleneck_distances:
     for i in range(0, len(bottleneck_distance)):
         bottleneck_distance[i] = max_value - bottleneck_distance[i]
 
+# change diagonal to median value
+print("modifying diagonal")
+all_vals = [val for r, row in enumerate(bottleneck_distances) for c, val in enumerate(row) if c != r]
+for row in bottleneck_distances:
+    print(row)
+all_vals.sort()
+median = all_vals[int(len(all_vals) / 2)]
+for i in range(len(bottleneck_distances)):
+    bottleneck_distances[i][i] = median
+
 print("clustering")
 clustering = AffinityPropagation(affinity='precomputed').fit(bottleneck_distances)
 clustering = [(idx_to_name[idx], cluster) for idx, cluster in enumerate(clustering.labels_)]
