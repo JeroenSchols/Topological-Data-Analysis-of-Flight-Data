@@ -58,21 +58,22 @@ persist_diagrams = []
 for dist_matrix in distance_matrices:
     dgms = None
     if use_zero_persistence & use_first_persistence:
-        dgms = ripser(dist_matrix, distance_matrix=True)['dgms']
+        print("should use either zero or first persistence metric, but not both")
+        assert False
     elif use_zero_persistence:
         dgms = ripser(dist_matrix, distance_matrix=True)['dgms'][0]
     elif use_first_persistence:
         dgms = ripser(dist_matrix, distance_matrix=True)['dgms'][1]
     else:
-        print("should use at least zero or first persistence metric")
+        print("should use either zero or first persistence metric")
         assert False
     persist_diagrams.append(dgms)
 
 print("computing bottleneck distance")
 bottleneck_distances = []
-for i, dist_matrix1 in enumerate(distance_matrices):
+for i, dist_matrix1 in enumerate(persist_diagrams):
     distances = []
-    for j, dist_matrix2 in enumerate(distance_matrices):
+    for j, dist_matrix2 in enumerate(persist_diagrams):
         if i > j:
             distances.append(bottleneck_distances[j][i])
         else:
