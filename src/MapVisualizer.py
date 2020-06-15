@@ -36,7 +36,7 @@ class MapVisualizer(Visualizer):
         ax = world_df.plot(color='gray')
         ax = world_df.boundary.plot(ax=ax, linewidth=1, color='black')
         ax = edge_df.plot(ax=ax, column=0, linewidth=1, cmap='viridis', alpha=alpha)
-        ax = point_df.plot(ax=ax, marker='o', column=0, markersize=5, cmap='brg')
+        ax = point_df.plot(ax=ax, marker='o', column=0, markersize=10, cmap='viridis')
         plt.axis('off')
         plt.tight_layout()
         plt.get_current_fig_manager().window.state('zoomed')
