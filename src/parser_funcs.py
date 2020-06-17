@@ -99,3 +99,9 @@ def results_to_latex(results, output_name):
                 summed = summed.append(pd.DataFrame(np.array([str(weekday), str(weekend)]).reshape((1, 2)),columns=["Weekdays", "Weekends"], index=[calendar.month_name[month]]))
         f.write(final.to_latex())
         f.write(summed.to_latex())
+
+def results_to_latex_list_days(results, output_name):
+    return
+
+def results_to_latex_list_day_night(results, output_name):
+    return

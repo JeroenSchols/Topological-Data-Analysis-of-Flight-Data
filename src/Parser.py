@@ -16,6 +16,7 @@ file_to_month = {file: month for num, (month, file) in enumerate(zip(files, file
 month_to_num = {k: v for v, k in enumerate(calendar.month_name)}
 # print(month_to_num)
 default = {day:[] for day in calendar.day_name}
+default_list = {int_day:int for int_day in range(1, 32)}
 default_night = {"day": [], "night": []}
 results = {}
 
@@ -162,6 +163,58 @@ with open(one_night) as file:
                 prev_month_day = month
 
 results_day_night_to_latex(results, "day_night_one")
+
+
+results = {}
+result = copy.deepcopy(default_list)
+with open(zero_persistence_file) as file:
+    prev_month = 0
+    for line in file:
+        if line == "\n":
+            continue
+        split = re.split(",|=|\n",line)
+        month = int(split[1])
+        day = int(split[3])
+        clust = int(split[4])
+        if month == prev_month:
+            result[day] = clust
+            results[month] = result
+            prev_month = month
+        else:
+            result = copy.deepcopy(default_list)
+            result[day] = clust
+            results[month] = result
+            prev_month = month
+
+print(results)
+
+results_to_latex_list_days(results, "list")
+
+results = {}
+result = copy.deepcopy(default_list)
+with open(one_persistence_file) as file:
+    prev_month = 0
+    for line in file:
+        if line == "\n":
+            continue
+        split = re.split(",|=|\n",line)
+        month = int(split[1])
+        day = int(split[3])
+        clust = int(split[4])
+        if month == prev_month:
+            result[day] = clust
+            results[month] = result
+            prev_month = month
+        else:
+            result = copy.deepcopy(default_list)
+            result[day] = clust
+            results[month] = result
+            prev_month = month
+
+print(results)
+
+results_to_latex_list_days(results, "list")
+
 
 
 # results_day = {}
